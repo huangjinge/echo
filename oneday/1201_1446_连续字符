@@ -1,0 +1,52 @@
+**链接：** https://leetcode-cn.com/problems/consecutive-characters/
+**难度：** <font color="green">简单</font>
+
+### 题目描述
+给你一个字符串 s ，字符串的「能量」定义为：只包含一种字符的最长非空子字符串的长度。请你返回字符串的能量。
+
+#### 示例：
+> **输入：** s = "leetcode" 
+> **输出：** 2
+> **解释：** 子字符串 "ee" 长度为 2 ，只包含字符 'e' 。
+
+##### 提示：
+- <code>1 <= s.length <= 500</code>
+- <code>s只包含小写英文字母</code>
+
+
+### 解题思路
+#### 一次遍历
+定义变量最大长度max和长度count，遍历字符串，
+当前字符与上一个字符相同时，count++，比较count和max的大小，并将大的值重新赋值给max；
+当前字符与上一个字符不同时，将count置为1；
+```golang
+func maxPower(s string) int {
+    //参数校验
+	if s == "" {
+		return 0
+	}
+    //初始化count, max为1
+	count, max := 1, 1
+
+    //遍历字符串
+	for i := 1; i < len(s); i++ {
+        //当前字符与上一个字符相同时
+		if s[i] == s[i-1] {
+            //连续相同字串的长度+1
+			count++
+            //比较count和max的大小，并将大的值重新赋值给max
+			if count > max {
+				max = count
+			}
+		}else {
+        //当前字符与上一个字符不同时，将count置为1
+			count = 1
+		}
+	}
+	return max
+}
+
+```
+##### 复杂度
+- 时间复杂度：$ O(N)$，其中n是字符串s的长度。遍历一次s的时间复杂度为 O(n)。
+- 空间复杂度：$ O(1) $，我们只需要常数的空间保存若干变量。
