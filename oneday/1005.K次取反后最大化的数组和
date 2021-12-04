@@ -1,0 +1,92 @@
+**链接：** https://leetcode-cn.com/problems/maximize-sum-of-array-after-k-negations/  
+**难度：** <font color="green">简单</font>
+
+### 题目描述
+    给你一个整数数组 nums 和一个整数 k ，按以下方法修改该数组：
+
+    选择某个下标 i 并将 nums[i] 替换为 -nums[i] 。
+    重复这个过程恰好 k 次。可以多次选择同一个下标 i 。
+
+    以这种方式修改数组后，返回数组 可能的最大和 。
+
+#### 示例1：
+> **输入：** nums = [4,2,3], k = 1   
+> **输出：** 5  
+> **解释：** 选择下标 1 ，nums 变为 [4,-2,3] 。
+
+#### 示例2：
+> **输入：** nums = [2,-3,-1,5,-4], k = 1   
+> **输出：** 13  
+> **解释：** 选择下标 (1, 4) ，nums 变为 [2,3,-1,5,4] 。
+
+##### 提示：
+- <code>1 <= nums.length <= 104</code>
+- <code>-100 <= nums[i] <= 100</code>
+- <code>1 <= k <= 104</code>
+
+### 解题思路
+#### 数组排序
+    第一步：数组排序，计算出数组中负数的个数neg
+    第二步：负数的个数neg与反转次数k比较
+        1.反转次数k小于负数个数neg，从小到大将负数反转成整数并求和
+        2.反转次数k大于负数个数neg，即将数组中所有负数都反转成整数后，还剩k-neg次反转次数。再次排序（此时数组中所有元素皆为正数）。然后反复将最小值进行反转。
+        （1）剩余反转次数是偶数，反转偶数次后还是原值
+        （2）剩余反转次数是奇数，反转奇数次后是：-原值
+
+```golang
+func largestSumAfterKNegations(nums []int, k int) int {
+	if len(nums) == 0 {
+		return 0
+	}
+	//1.数组排序，计算出数组中负数的个数
+	sort.Ints(nums)
+	neg := 0 //数组中负数的个数
+	for _, num := range nums {
+		if num <  0 {
+			neg++
+		}
+	}
+
+	sum := 0
+	//2.反转数组中的元素并求和
+	if k <= neg {
+	//（1）反转次数k小于负数个数，从小到大将负数反转成整数并求和
+		for i := 0; i < len(nums); i++ {
+			if i < k {
+				sum = sum - nums[i]
+			}else {
+				sum += nums[i]
+			}
+		}
+	}else {
+	//（2）反转次数k大于负数个数，即将数组中所有负数都反转成整数后，还剩k-neg次反转次数
+		// 1）将数组中所有负数都反转成整数
+		for i := 0; i < len(nums); i++ {
+			if nums[i] < 0 {
+				nums[i] = -nums[i]
+				k--
+			}
+		}
+		// 1）再次排序（此时数组中所有元素皆为正数）。然后反复将最小值进行反转
+		sort.Ints(nums)
+		if k%2 == 0 {//剩余反转次数是偶数，反转偶数次后还是原值
+			for i := 0; i < len(nums); i++ {
+				sum += nums[i]
+			}
+		} else {//剩余反转次数是奇数，反转奇数次后是：-原值
+			for i := 0; i < len(nums); i++ {
+				if i == 0 {
+					sum = sum - nums[i]
+				}else {
+					sum += nums[i]
+				}
+			}
+		}
+	}
+	return sum
+}
+
+```
+##### 复杂度
+- 时间复杂度：$ O(nlogn)$，排序消耗。
+- 空间复杂度：$ O(nlogn) $，排序消耗。
